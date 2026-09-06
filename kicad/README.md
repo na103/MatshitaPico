@@ -27,6 +27,8 @@
 |1    |CONN 3POS 2MM       |J3                               |S3B-PH-K-S          |                               |
 |1    |CONN SD CARD SMD    |SD1                              |10067847-011RLF     |                               |
 |1    |SWITCH SPST-NO      |SW1                              |2-1825027-0         |                               |
-<br>
-**note: The ATF150x programmer needed to program the CPLD can be found [here](https://github.com/roscopeco/atfprog-hardware).**
+
+## Note ##
+The ATF150x programmer needed to program the CPLD can be found [here](https://github.com/roscopeco/atfprog-hardware).
+
 
