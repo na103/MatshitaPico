@@ -28,7 +28,7 @@ TQFP-100 package, programmable in-circuit through a JTAG connector. The key poin
 version is the **PCB layout**: it must be designed together with a 3D-printed mounting bracket.
 The original eject button could also be reused as a control button.
 
-This first version **is** installable — as you can see from the photos here (link to come) —
+This first version **is** installable — as you can see from the photos [here](https://github.com/na103/MatshitaPico/tree/main/img/beta_assembly) —
 but several modifications are needed to fit it. When I laid out the PCB I did not worry about
 its dimensions.
 
