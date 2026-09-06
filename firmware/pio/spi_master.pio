@@ -1,0 +1,51 @@
+; =============================================================================
+; MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+; Copyright (c) 2026 Nicola Avanzi (na103)
+; Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+; See LICENSE.
+;
+; Derived from pico-examples/pio/spi (Copyright (c) Raspberry Pi Ltd,
+; BSD-3-Clause). That upstream licence applies to the derived SPI program below.
+; =============================================================================
+; spi_master.pio -- SPI master mode 0 (CPOL=0, CPHA=0) for the SD card on pio2.
+; Why it exists: the rev.0 PCB's SD pins (SCK=GP5, MOSI=GP26, MISO=GP4, CS=GP15)
+; do not map to any RP2350 hardware SPI (fixed per-pin F1 mux) -> the SD's SPI bus
+; is done in PIO, which can use any pins. pio0 = I2S audio, pio1 = subcode Q,
+; pio2 = THIS (free, RP2350-only).
+; MSB-first, full duplex, 8 bits per word (autopull/autopush at 8). 4 PIO cycles
+; per bit -> f_SPI = clk_sys / (4 * clkdiv). CS is NOT handled here: it is a plain
+; GPIO driven by the driver (sd_spi_pio.cpp).
+; =============================================================================
+.program spi_cpha0
+.side_set 1
+    out pins, 1 side 0 [1]   ; put the bit on MOSI with SCK low
+    in  pins, 1 side 1 [1]   ; sample MISO with SCK high
+
+% c-sdk {
+static inline void spi_cpha0_program_init(PIO pio, uint sm, uint offset,
+                                          uint pin_sck, uint pin_mosi,
+                                          uint pin_miso) {
+    pio_sm_config c = spi_cpha0_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, pin_mosi, 1);
+    sm_config_set_in_pins(&c, pin_miso);
+    sm_config_set_sideset_pins(&c, pin_sck);
+    // LEFT shift (MSB-first) with threshold 8: an 8-bit write to the TX FIFO is
+    // replicated across the bus lanes -> the byte leaves from bit 31 correctly; on
+    // RX the byte is read from the low lane.
+    sm_config_set_out_shift(&c, false, true, 8);
+    sm_config_set_in_shift(&c, false, true, 8);
+
+    pio_gpio_init(pio, pin_sck);
+    pio_gpio_init(pio, pin_mosi);
+    pio_gpio_init(pio, pin_miso);
+    gpio_pull_up(pin_miso);                      // MISO idle high (open when no card)
+    pio_sm_set_consecutive_pindirs(pio, sm, pin_miso, 1, false);
+    pio_sm_set_pindirs_with_mask(pio, sm,
+        (1u << pin_sck) | (1u << pin_mosi),      // outputs
+        (1u << pin_sck) | (1u << pin_mosi));
+    pio_sm_set_pins_with_mask(pio, sm, 0, (1u << pin_sck));  // SCK idle low (mode 0)
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

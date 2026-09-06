@@ -1,0 +1,56 @@
+; =============================================================================
+; MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+; Copyright (c) 2026 Nicola Avanzi (na103)
+; Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+; See LICENSE.
+; =============================================================================
+; i2s_slave.pio -- slave audio transmitter on A_DATA (LC7883M DAC format).
+; The CPLD generates BCLK (GP22) and LRCK (GP7) from C16M (hdl/clkgen.v): we do
+; NOT generate clocks here, we sync to their edges with 'wait gpio'.
+; Frame format (measured on hardware): 48 BCLK per LRCK frame -> 24 BCLK per
+; half-frame (LRCK high = L); DATA MSB-first, changed on BCLK low, sampled by the
+; DAC on BCLK high; 16-bit sample SIGN-EXTENDED over the half-frame's 24 slots
+; (the original drive's stream repeats the sign bit in the first 8 slots). So we
+; emit 24 bits/half-frame = sign-extend(8) + sample(16), identical to the measured
+; stream, independent of how the DAC trims the 16 bits.
+; Alignment: 'wait' on LRCK LEVELS; the wrap always returns before the rising edge
+; -> each frame restarts locked, no drift. FIFO: one 32-bit word per half-frame,
+; the 24-bit value in [31:8]: word = ((uint32_t)(int32_t)sample16) << 8. Order:
+; L, R, L, R, ... (the first expected half-frame is L = LRCK high).
+; =============================================================================
+
+.program i2s_slave
+; Absolute GPIO numbers (pinmap.h): LRCK = GP7, BCLK = GP22.
+.wrap_target
+    wait 0 gpio 7            ; wait LRCK low (end of previous frame / reset)
+    wait 1 gpio 7            ; LRCK rising edge = start of half-frame L
+    set x, 23                ; 24 bits
+lbit:
+    wait 0 gpio 22           ; BCLK low: present the bit
+    out pins, 1
+    wait 1 gpio 22           ; BCLK high: the DAC samples
+    jmp x-- lbit
+    wait 0 gpio 7            ; LRCK falling edge = start of half-frame R
+    set x, 23
+rbit:
+    wait 0 gpio 22
+    out pins, 1
+    wait 1 gpio 22
+    jmp x-- rbit
+.wrap
+
+% c-sdk {
+// out_pin = A_DATA (GP2). LEFT shift (bit 31 = MSB out first), autopull at 24 bits:
+// each FIFO word covers exactly one half-frame. The SM clock is irrelevant (pure
+// slave on 'wait gpio').
+static inline void i2s_slave_program_init(PIO pio, uint sm, uint offset, uint out_pin) {
+    pio_sm_config c = i2s_slave_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, out_pin, 1);
+    sm_config_set_out_shift(&c, /*shift_right=*/false, /*autopull=*/true, /*pull_thresh=*/24);
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);   // 8 words = 4 frames of slack
+    pio_gpio_init(pio, out_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, out_pin, 1, /*is_out=*/true);
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

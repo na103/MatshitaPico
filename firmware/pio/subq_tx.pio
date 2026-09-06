@@ -1,0 +1,76 @@
+; =============================================================================
+; MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+; Copyright (c) 2026 Nicola Avanzi (na103)
+; Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+; See LICENSE.
+; =============================================================================
+; subq_tx.pio -- P..W subcode serialiser on A_SUBQ (program subpw_tx).
+; For CD+G this sends 8 FULL BITS per frame (P,Q,R,S,T,U,V,W), so the R-W
+; subchannels (CD+G graphics) travel alongside Q. The CPLD burst engine
+; (MatshitaPico_top.v) shifts these bits into pw_sh on LRCK edges and serves them
+; to the motherboard on the SCCK burst edges (asynchronous to the motherboard's
+; NTSC colour clock: that is why the bits pass through a CPLD register and cannot
+; go straight to the wire).
+;
+; Pico->CPLD protocol (contract with pw_load_win = f6 1..4 in the CPLD):
+;   a subcode frame = 6 LRCK (phases f6 0..5, f6 advances on RISING edges).
+;   The 8 bits of the NEXT frame are presented MSB-first at LRCK half-periods in
+;   slots f6 1..4: bit7 in the HIGH half of f6==1, bit6 in the LOW, ... bit0 in the
+;   LOW half of f6==4. The CPLD samples each bit on the LRCK edge that CLOSES its
+;   half-period (8 exact edges in the window) -> the last shift-in happens >=1 LRCK
+;   before the frame's burst. A 2-LRCK gap (f6 5 and f6 0 of the next frame)
+;   separates bytes.
+; STREAM: 98 bytes per block, free-running after the initial sync on SCOR:
+;   [96 data bytes (frames 1..96), 0xFF (S0), 0x00 (S1 filler, burst suppressed)].
+;   The byte transmitted during frame N is frame N+1's burst; SCOR high = frame 0
+;   (S1) -> the first byte after sync lands in frame 1 (data).
+; SELF-HEALING: if the TX FIFO drains the SM stalls on 'out' and phase is lost; the
+;   firmware detects TXSTALL (FDEBUG) and RESTARTS the SM from the top (resync on
+;   SCOR) with a fresh block-aligned stream -> subcode.cpp.
+; =============================================================================
+
+.program subpw_tx
+; Absolute GPIO numbers (pinmap.h): SCOR/FRAME = GP6, LRCK = GP7.
+    wait 0 gpio 6            ; SCOR low
+    wait 1 gpio 6            ; SCOR rising = start of S1 (LRCK rising edge)
+    wait 0 gpio 7            ; mid of f6==0
+    wait 1 gpio 7            ; start of f6==1
+.wrap_target
+    out pins, 1              ; bit7 (P)  - high half of f6==1
+    wait 0 gpio 7
+    out pins, 1              ; bit6 (Q)
+    wait 1 gpio 7            ; start of f6==2
+    out pins, 1              ; bit5 (R)
+    wait 0 gpio 7
+    out pins, 1              ; bit4 (S)
+    wait 1 gpio 7            ; start of f6==3
+    out pins, 1              ; bit3 (T)
+    wait 0 gpio 7
+    out pins, 1              ; bit2 (U)
+    wait 1 gpio 7            ; start of f6==4
+    out pins, 1              ; bit1 (V)
+    wait 0 gpio 7
+    out pins, 1              ; bit0 (W)  - low half of f6==4
+    wait 1 gpio 7            ; the CPLD samples W; start of f6==5
+    wait 0 gpio 7            ; gap: f6==5 ...
+    wait 1 gpio 7            ; ... start of f6==0 of the next frame
+    wait 0 gpio 7            ; ... mid of f6==0
+    wait 1 gpio 7            ; start of f6==1 -> next byte
+.wrap
+
+% c-sdk {
+// out_pin = A_SUBQ (GP1). LEFT shift (MSB-first), autopull at 32 bits: a CONTINUOUS
+// stream of bytes packed 4-per-word (the 98-byte blocks are NOT word-aligned:
+// alignment is guaranteed by the firmware, which after each restart begins with a
+// fresh block on a fresh word). SM clock irrelevant (pure slave on 'wait gpio').
+static inline void subpw_tx_program_init(PIO pio, uint sm, uint offset, uint out_pin) {
+    pio_sm_config c = subpw_tx_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, out_pin, 1);
+    sm_config_set_out_shift(&c, /*shift_right=*/false, /*autopull=*/true, /*pull_thresh=*/32);
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);   // 8 words = ~4.3 ms of slack
+    pio_gpio_init(pio, out_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, out_pin, 1, /*is_out=*/true);
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
