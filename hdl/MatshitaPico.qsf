@@ -1,0 +1,109 @@
+# =============================================================================
+# MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+# Copyright (c) 2026 Nicola Avanzi (na103)
+# Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+# See LICENSE.
+#
+# Quartus II settings file (pin assignments and project options) for the
+# ATF1508AS (PLCC84), synthesized as its EPM7128SLC84 equivalent (MAX7000S).
+# The header below is the standard Quartus/Altera tool boilerplate.
+# =============================================================================
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions
+# and other software and tools, and its AMPP partner logic
+# functions, and any output files from any of the foregoing
+# (including device programming or simulation files), and any
+# associated documentation or information are expressly subject
+# to the terms and conditions of the Altera Program License
+# Subscription Agreement, Altera MegaCore Function License
+# Agreement, or other applicable license agreement, including,
+# without limitation, that your use is for the sole purpose of
+# programming logic devices manufactured by Altera and sold by
+# Altera or its authorized distributors.  Please refer to the
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY MAX7000S
+set_global_assignment -name DEVICE "EPM7128SLC84-10"
+set_global_assignment -name TOP_LEVEL_ENTITY MatshitaPico_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name DEVICE_FILTER_PACKAGE PLCC
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 84
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
+set_global_assignment -name VERILOG_FILE MatshitaPico_top.v
+set_global_assignment -name VERILOG_FILE host_if.v
+set_global_assignment -name VERILOG_FILE clkgen.v
+set_global_assignment -name OPTIMIZE_HOLD_TIMING OFF
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING OFF
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name MAX7000_DEVICE_IO_STANDARD TTL
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+set_location_assignment PIN_83 -to c16m_osc
+set_location_assignment PIN_20 -to cn9_reset
+set_location_assignment PIN_64 -to cn9_db[0]
+set_location_assignment PIN_65 -to cn9_db[1]
+set_location_assignment PIN_67 -to cn9_db[2]
+set_location_assignment PIN_68 -to cn9_db[3]
+set_location_assignment PIN_69 -to cn9_db[4]
+set_location_assignment PIN_70 -to cn9_db[5]
+set_location_assignment PIN_63 -to cn9_db[6]
+set_location_assignment PIN_74 -to cn9_db[7]
+set_location_assignment PIN_12 -to cn9_c16m
+set_location_assignment PIN_9 -to cn9_data
+set_location_assignment PIN_8 -to cn9_dsck
+set_location_assignment PIN_10 -to cn9_lrck
+set_location_assignment PIN_15 -to cn9_empasis
+set_location_assignment PIN_21 -to cn9_effk
+set_location_assignment PIN_52 -to rp_d[0]
+set_location_assignment PIN_51 -to rp_d[1]
+set_location_assignment PIN_50 -to rp_d[2]
+set_location_assignment PIN_49 -to rp_d[3]
+set_location_assignment PIN_48 -to rp_d[4]
+set_location_assignment PIN_46 -to rp_d[5]
+set_location_assignment PIN_45 -to rp_d[6]
+set_location_assignment PIN_44 -to rp_d[7]
+set_location_assignment PIN_62 -to TCK
+set_location_assignment PIN_14 -to TDI
+set_location_assignment PIN_71 -to TDO
+set_location_assignment PIN_23 -to TMS
+set_location_assignment PIN_35 -to rp_frame_sync
+set_location_assignment PIN_36 -to rp_lrck
+set_location_assignment PIN_37 -to rp_bclk
+set_location_assignment PIN_29 -to rp_empasis
+set_location_assignment PIN_30 -to rp_subq
+set_location_assignment PIN_31 -to rp_audio_data
+set_location_assignment PIN_33 -to rp_stch_req
+set_location_assignment PIN_34 -to rp_dat_avail
+set_location_assignment PIN_54 -to rp_st_avail
+set_location_assignment PIN_55 -to rp_byte_vld
+set_location_assignment PIN_39 -to rp_chan
+set_location_assignment PIN_57 -to rp_byte_req
+set_location_assignment PIN_41 -to rp_cmd_stb
+set_location_assignment PIN_17 -to cn9_scor
+set_location_assignment PIN_16 -to cn9_sbcp
+set_location_assignment PIN_18 -to cn9_scck
+set_location_assignment PIN_79 -to cn9_drq
+set_location_assignment PIN_77 -to cn9_dten
+set_location_assignment PIN_4 -to cn9_enable
+set_location_assignment PIN_73 -to cn9_n_cmd
+set_location_assignment PIN_76 -to cn9_n_hrd
+set_location_assignment PIN_80 -to cn9_n_hwr
+set_location_assignment PIN_5 -to cn9_n_ihac
+set_location_assignment PIN_6 -to cn9_n_stch
+set_location_assignment PIN_75 -to cn9_n_sten
+set_location_assignment PIN_11 -to cn9_n_xaen
+set_location_assignment PIN_60 -to cn9_db_dir
+set_location_assignment PIN_24 -to cn26_sck
+set_location_assignment PIN_25 -to cn26_sdata
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
