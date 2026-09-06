@@ -36,6 +36,33 @@ only chip in the 5 V domain, and a bus switch level-shifts the CPLD↔Pico signa
 firmware talks to the CPLD through the register/handshake contract in
 [`../hdl/host_if.v`](../hdl/host_if.v) (see `src/host_link.h`).
 
+## SD card layout
+
+The firmware reads a FAT-formatted microSD with this layout:
+
+```
+/                 <- SD root
+├── games/        <- CD-ROM images
+│   ├── Game A.cue
+│   ├── Game A.bin
+│   ├── Game A.sub     (optional: CloneCD subchannel, enables CD+G)
+│   ├── Game A.subok   (optional: empty marker, forces subcode ON for a mixed disc)
+│   └── ...
+├── work.hdf      <- hardfiles in the root (ENABLE_MPDISK builds only)
+└── extra.hdf
+```
+
+* **CD images — `/games/*.cue`.** Discs live in the `/games/` folder as **BIN/CUE, 2352-byte
+  raw** sectors (not `.iso`: an ISO is 2048-byte data only and carries no audio, sync or EDC).
+  The `.cue` and its referenced `.bin` sit side by side; the NEXT button cycles through them in
+  name order. A companion `.sub` (CloneCD subchannel) next to a `.cue` enables **CD+G** playback,
+  and an empty `.subok` marker forces the subcode stream on for a mixed disc known to be safe.
+* **Hardfiles — `*.hdf` in the root** (only when built with **`ENABLE_MPDISK`**). Amiga hard-disk
+  images placed in the SD root are exposed as block-device units **MPD0..MPD3** (first four found,
+  in name order). These are ordinary **`.hdf` files, interchangeable with WinUAE** — mount the same
+  image in WinUAE to prepare or inspect it, then drop it in the SD root. See *Optional feature:
+  mpdisk hardfiles* below.
+
 ## The golden reference
 
 The command protocol is a port of `cdtv.cpp` from **WinUAE** (the executable
