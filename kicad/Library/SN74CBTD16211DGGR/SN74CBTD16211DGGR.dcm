@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP SN74CBTD16211DGGR
+D 24-Bit FET Bus Switch With Level Shifting
+K
+F http://www.ti.com/lit/gpn/sn74cbtd16211
+$ENDCMP
+#
+#End Doc Library

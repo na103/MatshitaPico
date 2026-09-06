@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 2-1825027-0
+D Body Features: Actuator Material Nylon | Product Orientation Right Angle | Actuator Profile Extended | Case Color Black | Actuator Force 160 G | Actuator Color Black | Case Material Nylon | Actuator Force 5.64 OZ | Configuration Features: Ganged With | Switch Feedback Type Tactile | ESD Grounding Terminal Without | Support Bracket With | Number of Actuators Single | Operating Function NO | Configuration (Pole-Throw) Single Pole - Single Throw | Contact Features: Contact Current Rating 50 MAMP | Contact Base
+K
+F https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1308111-1_SWITCHES_CORE_PROGRAM_CATALOG&DocType=Catalog%20Section&DocLang=English&PartCntxt=2-1825027-0&DocFormat=pdf
+$ENDCMP
+#
+#End Doc Library

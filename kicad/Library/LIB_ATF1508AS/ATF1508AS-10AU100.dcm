@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ATF1508AS-10AU100
+D CPLD - Complex Programmable Logic Devices 128 MC CPLD 5 V ISP CPLD 100 PIN 10NS
+K
+F http://ww1.microchip.com/downloads/en/devicedoc/doc0784.pdf
+$ENDCMP
+#
+#End Doc Library

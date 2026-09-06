@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 641737-1
+D Configuration Features: PCB Mount Orientation Vertical | Number of Positions 4 | Number of Power Positions 4 | Number of Rows 1 | PCB Mount Orientation Right Angle | Contact Features: Contact Type Pin | Contact Mating Area Plating Material Thickness 3.81  5.08 MICM | PCB Contact Termination Area Plating Material Pre-Tin | Contact Mating Area Plating Material Tin | Contact Mating Area Plating Material Thickness 150  200 MICIN | Contact Retention Within Housing Without | Contact Layout Inline | Contact 
+K
+F https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=82181_SOFTSHELL_STANDARD_DENSITY&DocType=Catalog%20Section&DocLang=English&PartCntxt=641737-1&DocFormat=pdf
+$ENDCMP
+#
+#End Doc Library
