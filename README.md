@@ -14,8 +14,7 @@ card take the place of the optical mechanism.
 **Why:** many CDTV drives have a worn-out laser and cannot be repaired, and no drop-in
 replacement has ever existed. This project keeps these machines alive.
 
-> This repository contains the **CPLD design (HDL)**, **technical documentation**, **RP2350 firmware** and **KiCad hardware project of beta board**.
-
+> This repository contains the **CPLD design (HDL)**, **technical documentation**, **RP2350 firmware**, **KiCad hardware project of beta board** and the **Amiga-side `mpdisk.device` + boot CD builder** for hardfiles.
 ---
 
 ## Community beta
@@ -102,6 +101,15 @@ The full, byte-level command reference — including the vendor `0x6x` hardfile 
 The device is functionally complete on real hardware: data boot, persistent disc change,
 CD audio (play / pause / skip / stop), CD+G graphics, and the activity LED all work on a real
 CDTV. 
+
+## Optional: hardfiles (`mpdisk.device`)
+
+With the firmware built with `ENABLE_MPDISK`, `.hdf` hard-disk images in the root of the SD
+card become read/write Amiga units **MPD0..MPD3**, served through the CD controller itself
+(no extra hardware). A small boot CD loads `mpdisk.device`, mounts the hardfiles and hands the
+system over to MPD0:, so a CDTV can run Workbench from a writable disk. The Amiga sources and
+the boot CD builder are in [`amiga/`](amiga) and [`tools/`](tools) — see
+[`amiga/README.md`](amiga/README.md).
 
 ## Thanks
 Thankyou to all the people who have support this project.<br>
