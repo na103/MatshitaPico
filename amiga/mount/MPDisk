@@ -1,0 +1,34 @@
+/* MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+ * Copyright (c) 2026 Nicola Avanzi (na103)
+ * Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+ *
+ * Mountlist for mpdisk.device -- .hdf hardfile served by MatshitaPico (SD).
+ *
+ * The boot CD does NOT use this file: mounting is done by `mpmount` (C:), which
+ * asks the firmware for the geometry (TD_GETGEOMETRY) and mounts MPD0..MPD3 at
+ * runtime -> resizing a .hdf does not require rebuilding the CD. This Mountlist
+ * is kept as a REFERENCE (WinUAE / stub device, or a manual `Mount MPD0:`).
+ *
+ * SD naming: hardfiles are called disk0.hdf..disk3.hdf (alphabetical order ->
+ * units 0..3 -> MPD0..MPD3). Example below = 8 MiB .hdf (16384 blocks); for
+ * other sizes:  python3 tools/mkhdf.py <file.hdf> <MB>  (prints HighCyl).
+ * Format = OFS (DOS\0), built into the 1.3 ROM -> no L:FastFileSystem needed.
+ */
+MPD0:
+    Device         = mpdisk.device
+    Unit           = 0
+    Flags          = 0
+    Surfaces       = 1
+    BlocksPerTrack = 32
+    Reserved       = 2
+    Interleave     = 0
+    LowCyl         = 0
+    HighCyl        = 511
+    Buffers        = 30
+    BufMemType     = 1
+    Mount          = 1
+    DosType        = 0x444F5300
+    StackSize      = 4000
+    Priority       = 5
+    GlobVec        = 0
+#

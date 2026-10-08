@@ -1,0 +1,22 @@
+mpdisk boot CD overlay
+======================
+
+Everything you put in THIS folder (files and subfolders) is copied into the
+boot CD on the next `tools/build-bootcd.sh` run.
+
+Examples:
+  amiga/boot/cd-extra/MYFILE.TXT         ->  CD:/MYFILE.TXT
+  amiga/boot/cd-extra/S/TEST             ->  CD:/S/TEST
+  amiga/boot/cd-extra/C/TYPE             ->  CD:/C/TYPE   (merged with the C: cache)
+  amiga/boot/cd-extra/TOOLS/MYPROG       ->  CD:/TOOLS/MYPROG
+
+Rules:
+  - names become UPPERCASE (ISO9660);
+  - files starting with '.' (like this one) are IGNORED;
+  - if a name matches a file already present (e.g. S/STARTUP-SEQUENCE), the
+    overlay REPLACES it;
+  - the CD is READ-ONLY: for files you need to WRITE use the MPD0: hardfile;
+  - Amiga binaries go in as they are (no conversion).
+
+Copyright note: do NOT put copyrighted Commodore binaries here (C: commands,
+CDTV.TM); they stay in the git-ignored cache tools/.bootcd-cache/.

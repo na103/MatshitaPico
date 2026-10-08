@@ -1,0 +1,30 @@
+; =============================================================================
+; MatshitaPico -- Solid-state CD-ROM drive replacement for the Commodore CDTV
+; Copyright (c) 2026 Nicola Avanzi (na103)
+; Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+; =============================================================================
+; startup-sequence of the mpdisk boot CD: mount the hardfiles, then hand the
+; system over to MPD0: and run its own Startup-sequence (Workbench).
+;
+; RMTM ("Remove TradeMark") MUST be in C: and be the FIRST command, otherwise
+; the CDTV stays on the splash screen (white logo) and shows nothing.
+; =============================================================================
+RMTM
+
+Failat 21
+
+; mpmount reads the real geometry from the firmware (TD_GETGEOMETRY) and mounts
+; the units present (disk0.hdf..disk3.hdf -> MPD0..MPD3) with the ROM OFS.
+; Resizing a .hdf does NOT require rebuilding the CD.
+copy DEVS:mpdisk.device RAM:
+assign DEVS: RAM:
+mpmount
+MPD0:C/Assign SYS: MPD0:
+MPD0:C/Assign C: MPD0:C
+MPD0:C/Assign L: MPD0:L
+MPD0:C/Assign LIBS: MPD0:LIBS
+MPD0:C/Assign DEVS: MPD0:DEVS
+MPD0:C/Assign S: MPD0:S
+MPD0:C/Assign FONTS: MPD0:Fonts
+MPD0:C/Assign T: RAM:
+MPD0:C/execute MPD0:S/Startup-sequence
